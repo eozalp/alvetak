@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ürün Detayı</title>
+<style>body{margin:2rem;font-family:sans-serif;text-align:center} img{max-width:90vw;border-radius:8px} a{display:inline-block;margin-top:1rem;padding:0.5rem 1rem;background:#25D366;color:#fff;text-decoration:none;font-size:1.2rem;border-radius:5px}</style>
+</head><body>
+<div id="c"></div>
+<script>
+const u=new URLSearchParams(window.location.search);
+const f=u.get('file'),i=parseInt(u.get('index'));
+if(!f||isNaN(i)) document.getElementById('c').innerText='Geçersiz parametre';
+else fetch(f).then(r=>r.json()).then(d=>{
+ const it=d[i];
+ document.getElementById('c').innerHTML=`<img src="${it.src}" alt="${it.filename}"><br><a href="${it.whatsapp}" target="_blank">WhatsApp ile sipariş et</a>`;
+}).catch(_=>document.getElementById('c').innerText='Yükleme hatası');
+</script>
+</body></html>

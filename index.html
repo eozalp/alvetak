@@ -1,51 +1,34 @@
 
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yüzük Galerisi</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; padding: 1rem; }
-        .card { border: 1px solid #ccc; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background: #fff; }
-        img { max-width: 100%; height: auto; border-radius: 10px; }
-        button { margin-top: 10px; padding: 10px; width: 100%; border: none; border-radius: 5px; background: #25D366; color: white; font-size: 16px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <h1 style="text-align:center">Yüzük Galerisi</h1>
-    <div id="gallery" class="grid"></div>
-    <script>
-        let page = 0;
-        let loading = false;
-        async function loadNextPage() {
-            if (loading) return;
-            loading = true;
-            try {
-                const res = await fetch("images_page_" + page + ".json");
-                if (!res.ok) return;
-                const data = await res.json();
-                const gallery = document.getElementById("gallery");
-                data.forEach(item => {
-                    const card = document.createElement("div");
-                    card.className = "card";
-                    card.innerHTML = `<img src="${item.src}" alt="${item.filename}"><a href="${item.whatsapp_url}" target="_blank"><button>WhatsApp ile al</button></a>`;
-                    gallery.appendChild(card);
-                });
-                page++;
-                loading = false;
-            } catch (e) {
-                console.error("Yüklenemedi:", e);
-                loading = false;
-            }
-        }
-        window.addEventListener("scroll", () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                loadNextPage();
-            }
-        });
-        loadNextPage();
-    </script>
-</body>
-</html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yüzük Galerisi</title>
+<style>
+ body{margin:0;padding:0;font-family:sans-serif}
+ .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding:1rem}
+ .card{border:1px solid #ddd;border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+ .card img{width:100%;display:block}
+ .card a{margin-top:auto;padding:0.5rem;background:#25D366;color:#fff;text-align:center;text-decoration:none;font-weight:bold}
+</style>
+</head><body>
+<h1 style="text-align:center">Yüzük Galerisi</h1>
+<div id="gallery" class="grid"></div>
+<script>
+let page=0,loading=false;
+async function load(){
+ if(loading) return;loading=true;
+ const res=await fetch("${json_prefix}"+page+".json");
+ if(res.ok){
+  const data=await res.json();
+  data.forEach(item=>{
+    const c=document.createElement('div');c.className='card';
+    c.innerHTML=`<img src="${item.src}"><a href="${item.product_url}" target="_blank">Detay & WhatsApp</a>`;
+    document.getElementById('gallery').append(c);
+  });page++;loading=false;
+ }
+}
+window.addEventListener('scroll',()=>{
+ if(window.innerHeight+window.scrollY>=document.body.offsetHeight-200) load();
+});load();
+</script>
+</body></html>
