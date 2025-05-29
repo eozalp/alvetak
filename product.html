@@ -1,18 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="tr">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ürün Detayı</title>
-<style>body{margin:2rem;font-family:sans-serif;text-align:center} img{max-width:90vw;border-radius:8px} a{display:inline-block;margin-top:1rem;padding:0.5rem 1rem;background:#25D366;color:#fff;text-decoration:none;font-size:1.2rem;border-radius:5px}</style>
-</head><body>
-<div id="c"></div>
-<script>
-const u=new URLSearchParams(window.location.search);
-const f=u.get('file'),i=parseInt(u.get('index'));
-if(!f||isNaN(i)) document.getElementById('c').innerText='Geçersiz parametre';
-else fetch(f).then(r=>r.json()).then(d=>{
- const it=d[i];
- document.getElementById('c').innerHTML=`<img src="${it.src}" alt="${it.filename}"><br><a href="${it.whatsapp}" target="_blank">WhatsApp ile sipariş et</a>`;
-}).catch(_=>document.getElementById('c').innerText='Yükleme hatası');
-</script>
-</body></html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Ürün Detayı</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    img { max-width: 90%; border-radius: 10px; margin-bottom: 20px; }
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Yüzük Siparişi</h1>
+  <img id="ringImage" src="" alt="Yüzük Görseli"/>
+  <br/>
+  <a id="waLink" href="#" target="_blank">
+    <button>WhatsApp ile sipariş ver</button>
+  </a>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const b64 = params.get('b64');
+    if (b64) {
+      const img = document.getElementById("ringImage");
+      img.src = decodeURIComponent(b64);
+
+      const msg = encodeURIComponent("Merhaba, bu yüzüğü sipariş etmek istiyorum:");
+      const waURL = `https://wa.me/905446146671?text=${msg}%0A${decodeURIComponent(b64)}`;
+      document.getElementById("waLink").href = waURL;
+    }
+  </script>
+</body>
+</html>
