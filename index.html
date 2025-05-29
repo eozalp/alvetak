@@ -29,11 +29,15 @@
         if (!res.ok) return;
         const data = await res.json();
         const gallery = document.getElementById("gallery");
-        data.forEach(item => {
+        data.forEach((item, index) => {
           const card = document.createElement("div");
           card.className = "card";
-          const b64Encoded = encodeURIComponent(item.src);
-          card.innerHTML = `<img src="${item.src}"><a href="product.html?b64=${b64Encoded}"><button>WhatsApp ile al</button></a>`;
+          const id = `page=${page}&index=${index}`;
+          card.innerHTML = `
+            <img src="${item.src}">
+            <a href="product.html?${id}">
+              <button>WhatsApp ile al</button>
+            </a>`;
           gallery.appendChild(card);
         });
         page++;

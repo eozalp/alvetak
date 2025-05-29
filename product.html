@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ürün Detayı</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Ürün Sayfası</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    body { font-family: sans-serif; padding: 20px; text-align: center; }
-    img { max-width: 90%; border-radius: 10px; margin-bottom: 20px; }
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    img { max-width: 90%; border-radius: 10px; }
     button {
       padding: 12px 24px;
+      margin-top: 20px;
       font-size: 18px;
       background: #25D366;
       color: white;
@@ -19,24 +20,50 @@
   </style>
 </head>
 <body>
-  <h1>Yüzük Siparişi</h1>
-  <img id="ringImage" src="" alt="Yüzük Görseli"/>
-  <br/>
-  <a id="waLink" href="#" target="_blank">
+  <h1>Yüzük Detayı</h1>
+  <div id="imageContainer">Yükleniyor...</div>
+  <a id="waLink" href="#" target="_blank" style="display:none;">
     <button>WhatsApp ile sipariş ver</button>
   </a>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const b64 = params.get('b64');
-    if (b64) {
-      const img = document.getElementById("ringImage");
-      img.src = decodeURIComponent(b64);
+    async function main() {
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get("page");
+      const index = params.get("index");
+      const container = document.getElementById("imageContainer");
 
-      const msg = encodeURIComponent("Merhaba, bu yüzüğü sipariş etmek istiyorum:");
-      const waURL = `https://wa.me/905446146671?text=${msg}%0A${decodeURIComponent(b64)}`;
-      document.getElementById("waLink").href = waURL;
+      if (!page || !index) {
+        container.innerHTML = "Geçersiz ürün bağlantısı.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`images_page_${page}.json`);
+        const data = await res.json();
+        const item = data[parseInt(index)];
+
+        if (!item) {
+          container.innerHTML = "Ürün bulunamadı.";
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = item.src;
+        container.innerHTML = "";
+        container.appendChild(img);
+
+        const waMsg = encodeURIComponent("Merhaba, bu yüzüğü sipariş etmek istiyorum: " + item.filename);
+        const waLink = `https://wa.me/905446146671?text=${waMsg}`;
+        document.getElementById("waLink").href = waLink;
+        document.getElementById("waLink").style.display = "inline-block";
+      } catch (err) {
+        container.innerHTML = "Veri yüklenemedi.";
+        console.error(err);
+      }
     }
+
+    main();
   </script>
 </body>
 </html>
