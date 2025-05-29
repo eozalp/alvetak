@@ -2,56 +2,50 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resim Galerisi</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; margin: 0; padding: 1rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 1rem; }
-    .card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
-    .card img { width: 100%; height: auto; display: block; }
-    .card-body { padding: 0.5rem; flex: 1; }
-    .card-body h4 { margin: 0 0 0.5rem; font-size: 1rem; }
-    .btn { background-color: #25D366; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer; width: 100%; }
-    .btn:hover { background-color: #1ebe5d; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yüzük Galerisi</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; padding: 1rem; }
+        .card { border: 1px solid #ccc; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background: #fff; }
+        img { max-width: 100%; height: auto; border-radius: 10px; }
+        button { margin-top: 10px; padding: 10px; width: 100%; border: none; border-radius: 5px; background: #25D366; color: white; font-size: 16px; cursor: pointer; }
+    </style>
 </head>
 <body>
-  <div id="gallery" class="grid"></div>
-  <script>
-    let currentPage = 1;
-    const totalPages = 194;
-    const prefix = './'+ 'images_page_';
-
-    function loadPage(page) {
-      fetch(prefix + page + '.json')
-        .then(res => res.json())
-        .then(images => images.forEach(createCard))
-        .catch(e => console.error('JSON yüklenirken hata:', e));
-    }
-
-    function createCard(obj) {
-      const card = document.createElement('div'); card.className = 'card';
-      const img = document.createElement('img'); img.src = obj.data; img.alt = obj.name; img.loading = 'lazy';
-      const body = document.createElement('div'); body.className = 'card-body';
-      const title = document.createElement('h4'); title.textContent = obj.name;
-      const btn = document.createElement('button'); btn.className = 'btn'; btn.innerText = 'WhatsApp ile al';
-      btn.onclick = () => window.open(`https://wa.me/?text=${encodeURIComponent(location.href + ' ' + obj.name)}`);
-      body.append(title, btn);
-      card.append(img, body);
-      document.getElementById('gallery').append(card);
-    }
-
-    function onScroll() {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && currentPage < totalPages) {
-        currentPage++;
-        loadPage(currentPage);
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => loadPage(1));
-    window.addEventListener('scroll', onScroll);
-  </script>
+    <h1 style="text-align:center">Yüzük Galerisi</h1>
+    <div id="gallery" class="grid"></div>
+    <script>
+        let page = 0;
+        let loading = false;
+        async function loadNextPage() {
+            if (loading) return;
+            loading = true;
+            try {
+                const res = await fetch("images_page_" + page + ".json");
+                if (!res.ok) return;
+                const data = await res.json();
+                const gallery = document.getElementById("gallery");
+                data.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.innerHTML = `<img src="${item.src}" alt="${item.filename}"><a href="${item.whatsapp_url}" target="_blank"><button>WhatsApp ile al</button></a>`;
+                    gallery.appendChild(card);
+                });
+                page++;
+                loading = false;
+            } catch (e) {
+                console.error("Yüklenemedi:", e);
+                loading = false;
+            }
+        }
+        window.addEventListener("scroll", () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                loadNextPage();
+            }
+        });
+        loadNextPage();
+    </script>
 </body>
 </html>
